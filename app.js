@@ -182,8 +182,52 @@ function renderDashboard() {
         </div>
     `;
     // Re-initialize dynamic nav links based on role if needed
-}
 
+
+    const GasSlipView = `
+    <div class="max-w-4xl mx-auto">
+        <div class="flex space-x-4 mb-6">
+            <button onclick="toggleGasTab('manual')" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Manual Entry</button>
+            <button onclick="toggleGasTab('upload')" class="px-4 py-2 bg-gray-200 text-gray-600 rounded-lg">Photo Upload</button>
+        </div>
+
+        <div id="gas-content" class="bg-white p-8 rounded-xl shadow-sm border">
+            <h3 class="text-xl font-bold mb-4">Enter Receipt Data</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" placeholder="Vehicle Plate" class="p-3 border rounded-lg">
+                <input type="number" placeholder="Liters" class="p-3 border rounded-lg">
+                <input type="date" class="p-3 border rounded-lg col-span-2">
+                <button class="col-span-2 bg-blue-600 text-white py-3 rounded-lg font-bold">Submit Slip</button>
+            </div>
+        </div>
+    </div>
+`;
+}
+function toggleGasTab(mode) {
+    const content = document.getElementById('gas-content');
+    if (mode === 'upload') {
+        content.innerHTML = `
+            <div class="border-2 border-dashed p-10 text-center">
+                <input type="file" id="receiptFile" accept="image/*" class="hidden">
+                <label for="receiptFile" class="cursor-pointer text-blue-600">Click to upload photo</label>
+                <div id="ocr-result" class="mt-4 text-sm text-gray-500 italic">OCR Processing (Placeholder)</div>
+            </div>
+        `;
+    } else {
+        // Re-inject manual form HTML here
+    }
+}
+function initCharts() {
+    const ctx = document.getElementById('gasChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+            datasets: [{ label: 'Liters Consumed', data: [120, 190, 150, 210], backgroundColor: '#3b82f6' }]
+        },
+        options: { responsive: true }
+    });
+}
 // Update the router to check for admin-only sections
 function router(viewKey) {
     const viewport = document.getElementById('main-viewport');
@@ -200,6 +244,72 @@ function router(viewKey) {
         // Load other views (analytics, vehicles, etc.)
         viewport.innerHTML = Views[viewKey];
     }
+}
+// Initialize Database in State
+state.db = {
+    users: JSON.parse(localStorage.getItem('users')) || [{name: 'Admin', role: 'admin'}],
+    vehicles: JSON.parse(localStorage.getItem('vehicles')) || [
+        { id: 1, model: 'Toyota Hilux', status: 'Available' },
+        { id: 2, model: 'Mitsubishi L300', status: 'Pending' }
+    ],
+    gasSlips: JSON.parse(localStorage.getItem('gasSlips')) || []
+};
+
+// Helper to save to disk
+function saveDB() {
+    localStorage.setItem('users', JSON.stringify(state.db.users));
+    localStorage.setItem('vehicles', JSON.stringify(state.db.vehicles));
+    localStorage.setItem('gasSlips', JSON.stringify(state.db.gasSlips));
+}
+
+function renderVehicles() {
+    const list = document.getElementById('vehicle-list');
+    list.innerHTML = state.db.vehicles.map(v => `
+        <tr class="border-b">
+            <td class="p-4">${v.model}</td>
+            <td class="p-4">
+                <span class="px-2 py-1 rounded text-xs ${v.status === 'Available' ? 'bg-green-100' : 'bg-yellow-100'}">
+                    ${v.status}
+                </span>
+            </td>
+            <td class="p-4">
+                ${state.user.role === 'admin' 
+                    ? `<button onclick="updateVehicle(${v.id}, 'Available')" class="text-green-600">Approve</button> | 
+                       <button onclick="updateVehicle(${v.id}, 'Denied')" class="text-red-600">Deny</button>`
+                    : `<button onclick="requestVehicle(${v.id})" class="text-blue-600">Request</button>`
+                }
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateVehicle(id, newStatus) {
+    state.db.vehicles = state.db.vehicles.map(v => v.id === id ? {...v, status: newStatus} : v);
+    saveDB();
+    renderVehicles(); // Refresh UI
+}
+
+function renderUserManagement() {
+    if (state.user.role !== 'admin') return '<p>Access Denied</p>';
+
+    return `
+        <div class="mt-8 p-6 bg-gray-50 rounded-lg">
+            <h3 class="font-bold text-lg mb-4">System Users</h3>
+            ${state.db.users.map(u => `
+                <div class="flex justify-between p-2 border-b">
+                    <span>${u.name} (${u.role})</span>
+                    <button onclick="deleteUser('${u.name}')" class="text-red-500">Delete</button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function deleteUser(name) {
+    state.db.users = state.db.users.filter(u => u.name !== name);
+    saveDB();
+    // Re-render the Profile view
+    router('profile');
 }
 
 // Start with Login
