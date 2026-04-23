@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Fuel System</title>
+</head>
+<body class="bg-gray-100 h-screen flex">
+
+    <aside id="sidebar" class="hidden w-64 bg-slate-900 text-white p-6 flex flex-col justify-between">
+        <div>
+            <h1 class="text-xl font-bold mb-8">Fleet Manager</h1>
+            <nav class="space-y-4">
+                <button onclick="renderView('analytics')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">Data Analytics</button>
+                <button onclick="renderView('vehicles')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">Vehicle Info</button>
+                <button onclick="renderView('gas-slip')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">Gas Slip</button>
+                <button onclick="renderView('settings')" class="block w-full text-left p-2 hover:bg-slate-700 rounded">Settings</button>
+            </nav>
+        </div>
+        <button onclick="renderView('profile')" class="text-sm text-gray-400">User Profile</button>
+    </aside>
+
+    <main id="main-content" class="flex-1 p-8 overflow-auto">
+        </main>
+
+    <script>
+        // Simulated User Data
+        const user = { role: 'admin' }; // Change to 'user' to test visibility
+
+        function renderView(view) {
+            const content = document.getElementById('main-content');
+            
+            // Logic to clear and swap components
+            switch(view) {
+                case 'analytics':
+                    content.innerHTML = `<h2 class="text-2xl font-bold">Analytics</h2><div class="h-64 bg-white mt-4 rounded shadow">Chart goes here</div>`;
+                    break;
+                // Add other cases...
+            }
+        }
+        
+        // Admin-only toggle example
+        function showAdminTools() {
+            if (user.role === 'admin') {
+                return `<button class="bg-red-500 text-white px-4 py-2 rounded">Delete Record</button>`;
+            }
+            return '';
+        }
+    </script>
+</body>
+</html>

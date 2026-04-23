@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetMS | Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <aside id="sidebar" class="w-64 bg-slate-900 text-white flex flex-col transition-all duration-300">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold tracking-tight text-blue-400">FLEET<span class="text-white">MS</span></h1>
+            <p id="user-role-badge" class="text-xs uppercase bg-slate-800 text-slate-400 px-2 py-1 rounded mt-2 inline-block font-semibold"></p>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2 mt-4">
+            <button onclick="router('analytics')" class="nav-link flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-chart-line w-5"></i> <span>Analytics</span>
+            </button>
+            <button onclick="router('vehicles')" class="nav-link flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-car w-5"></i> <span>Vehicles</span>
+            </button>
+            <button onclick="router('gas-slip')" class="nav-link flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-gas-pump w-5"></i> <span>Gas Slips</span>
+            </button>
+            <button onclick="router('settings')" class="nav-link flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-gear w-5"></i> <span>Settings</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="router('profile')" class="flex items-center space-x-3 w-full p-3 rounded-lg hover:bg-slate-800 transition">
+                <i class="fa-solid fa-circle-user w-5"></i> <span>My Profile</span>
+            </button>
+        </div>
+    </aside>
+
+    <section class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8">
+            <h2 id="view-title" class="text-xl font-semibold text-gray-800">Dashboard</h2>
+            <div id="admin-actions" class="hidden">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium shadow-sm">
+                    <i class="fa-solid fa-plus mr-2"></i> Admin Action
+                </button>
+            </div>
+        </header>
+
+        <div id="main-viewport" class="p-8 overflow-y-auto">
+            </div>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
